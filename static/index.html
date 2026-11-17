@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ObraTrack · Rastreo de herramientas</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <!-- Pantalla de acceso -->
+  <div id="auth-view" class="auth-view">
+    <div class="auth-brand">
+      <div class="logo-mark">OT</div>
+      <h1>ObraTrack</h1>
+      <p>Rastreo GPS de herramientas de construcción</p>
+    </div>
+
+    <form id="auth-form" class="card auth-card" autocomplete="on">
+      <h2 id="auth-title">Iniciar sesión</h2>
+      <label id="name-field" class="hidden">
+        Nombre
+        <input id="auth-name" type="text" maxlength="80" placeholder="Nombre y apellido">
+      </label>
+      <label>
+        Correo
+        <input id="auth-email" type="email" required placeholder="tu@correo.com">
+      </label>
+      <label>
+        Contraseña
+        <input id="auth-password" type="password" required minlength="8" placeholder="Mínimo 8 caracteres">
+      </label>
+      <button id="auth-submit" class="btn btn-primary" type="submit">Entrar</button>
+      <p class="auth-switch">
+        <span id="auth-switch-text">¿No tienes cuenta?</span>
+        <a href="#" id="auth-toggle">Crear una</a>
+      </p>
+      <p class="hint">Demo: demo@example.com / demo1234 (después de ejecutar <code>python -m app.seed</code>)</p>
+    </form>
+  </div>
+
+  <!-- Aplicación -->
+  <div id="app-view" class="app-view hidden">
+    <header class="topbar">
+      <div class="topbar-brand">
+        <div class="logo-mark small">OT</div>
+        <strong>ObraTrack</strong>
+      </div>
+      <div class="stats">
+        <div class="stat"><span id="stat-devices">0</span><small>herramientas</small></div>
+        <div class="stat danger"><span id="stat-outside">0</span><small>fuera</small></div>
+        <div class="stat warning"><span id="stat-alerts">0</span><small>alertas</small></div>
+      </div>
+      <div class="topbar-user">
+        <span id="user-name"></span>
+        <button id="logout-btn" class="btn btn-ghost" type="button">Salir</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="sidebar">
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Herramientas</h2>
+            <span id="device-count" class="pill">0</span>
+          </div>
+          <ul id="device-list" class="device-list"></ul>
+          <form id="device-form" class="inline-form">
+            <input id="new-device-name" type="text" maxlength="80" placeholder="Nueva herramienta" required>
+            <button class="btn btn-primary" type="submit">+</button>
+          </form>
+        </section>
+
+        <section id="device-detail" class="panel hidden">
+          <div class="panel-head">
+            <h2 id="detail-name">Herramienta</h2>
+            <span id="detail-status" class="pill">—</span>
+          </div>
+          <p id="detail-meta" class="muted small"></p>
+
+          <div class="token-row">
+            <div>
+              <small class="muted">Token para la ESP32</small>
+              <code id="device-token" class="token"></code>
+            </div>
+            <button id="copy-token" class="btn btn-ghost" type="button" title="Copiar token">Copiar</button>
+          </div>
+
+          <h3>Geocerca circular</h3>
+          <form id="geofence-form" class="geo-form">
+            <label>
+              Nombre
+              <input id="geo-name" type="text" maxlength="80" value="Geocerca">
+            </label>
+            <div class="grid-2">
+              <label>
+                Radio (m)
+                <input id="geo-radius" type="number" min="1" max="50000" step="1" value="150" required>
+              </label>
+              <label class="checkbox-label">
+                <input id="geo-enabled" type="checkbox" checked>
+                Activa
+              </label>
+            </div>
+            <div class="grid-2">
+              <label>
+                Latitud centro
+                <input id="geo-lat" type="number" step="0.000001" min="-90" max="90" required>
+              </label>
+              <label>
+                Longitud centro
+                <input id="geo-lon" type="number" step="0.000001" min="-180" max="180" required>
+              </label>
+            </div>
+            <div class="btn-row">
+              <button id="geo-save" class="btn btn-primary" type="submit">Guardar geocerca</button>
+              <button id="geo-delete" class="btn btn-danger" type="button">Eliminar</button>
+            </div>
+            <div class="btn-row">
+              <button id="geo-from-device" class="btn btn-ghost" type="button">Usar última posición</button>
+              <button id="geo-from-map" class="btn btn-ghost" type="button">Usar centro del mapa</button>
+            </div>
+            <p class="hint">Tip: haz clic en el mapa para mover el centro de la geocerca.</p>
+          </form>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Alertas</h2>
+            <div class="segmented">
+              <button class="segmented-btn active" data-state="open" type="button">Abiertas</button>
+              <button class="segmented-btn" data-state="all" type="button">Todas</button>
+            </div>
+          </div>
+          <ul id="alert-list" class="alert-list"></ul>
+        </section>
+      </aside>
+
+      <div id="map" class="map"></div>
+    </main>
+  </div>
+
+  <div id="toast" class="toast hidden" role="status"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>
